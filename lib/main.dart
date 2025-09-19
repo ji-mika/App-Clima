@@ -31,7 +31,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final TextEditingController _cityCtrl = TextEditingController(text: 'Ciudad de México');
+  final TextEditingController _cityCtrl = TextEditingController(
+    text: 'Ciudad de México',
+  );
 
   // Lista de 10 ciudades extras
   final List<String> _ciudades = [
@@ -39,11 +41,11 @@ class _HomePageState extends State<HomePage> {
     'Ixmiquilpan',
     'Lima',
     'Florencia',
-    'Venecia',
+    'Barcelona',
     'Gunpo',
     'Beijing',
     'Santiago',
-    'Nueva York',
+    'Buenos Aires',
     'Moscu',
   ];
 
@@ -62,24 +64,22 @@ class _HomePageState extends State<HomePage> {
     });
 
     try {
-      final results = await Future.wait(_ciudades.map((city) async {
-        final uri = Uri.https(
-          'api.openweathermap.org',
-          '/data/2.5/weather',
-          {
+      final results = await Future.wait(
+        _ciudades.map((city) async {
+          final uri = Uri.https('api.openweathermap.org', '/data/2.5/weather', {
             'q': city,
             'appid': _apiKey,
             'units': 'metric',
             'lang': 'es',
-          },
-        );
-        final resp = await http.get(uri);
-        if (resp.statusCode == 200) {
-          return jsonDecode(resp.body) as Map<String, dynamic>;
-        } else {
-          return null;
-        }
-      }));
+          });
+          final resp = await http.get(uri);
+          if (resp.statusCode == 200) {
+            return jsonDecode(resp.body) as Map<String, dynamic>;
+          } else {
+            return null;
+          }
+        }),
+      );
 
       setState(() {
         _datosCiudades = results;
@@ -107,16 +107,12 @@ class _HomePageState extends State<HomePage> {
       _error = null;
     });
 
-    final uri = Uri.https(
-      'api.openweathermap.org',
-      '/data/2.5/weather',
-      {
-        'q': city,
-        'appid': _apiKey,
-        'units': 'metric', // Métricas → °C
-        'lang': 'es', // Respuesta en español
-      },
-    );
+    final uri = Uri.https('api.openweathermap.org', '/data/2.5/weather', {
+      'q': city,
+      'appid': _apiKey,
+      'units': 'metric', // Métricas → °C
+      'lang': 'es', // Respuesta en español
+    });
     try {
       final resp = await http.get(uri);
       if (resp.statusCode == 200) {
@@ -148,13 +144,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final hasData = _datosCiudades.isNotEmpty && _datosCiudades.any((d) => d != null);
+    final hasData =
+        _datosCiudades.isNotEmpty && _datosCiudades.any((d) => d != null);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('App del Clima'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('App del Clima'), centerTitle: true),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -192,7 +186,8 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 16),
 
-              if (_loading) const LinearProgressIndicator(), // Indicador de carga
+              if (_loading)
+                const LinearProgressIndicator(), // Indicador de carga
 
               if (_error != null) ...[
                 const SizedBox(height: 8),
@@ -227,8 +222,10 @@ class _HomePageState extends State<HomePage> {
                       }
                       final nombreCiudad = data['name'] ?? _ciudades[i];
                       final pais = (data['sys']?['country'])?.toString() ?? '';
-                      final weather = (data['weather'] as List?)?.cast<Map<String, dynamic>>();
-                      final descripcion = (weather != null && weather.isNotEmpty)
+                      final weather = (data['weather'] as List?)
+                          ?.cast<Map<String, dynamic>>();
+                      final descripcion =
+                          (weather != null && weather.isNotEmpty)
                           ? weather.first['description']?.toString() ?? ''
                           : '';
                       final icono = (weather != null && weather.isNotEmpty)
@@ -258,7 +255,9 @@ class _HomePageState extends State<HomePage> {
               else
                 const Expanded(
                   child: Center(
-                    child: Text('Busca una ciudad o consulta las 10 ciudades predefinidas'),
+                    child: Text(
+                      'Busca una ciudad o consulta las 10 ciudades predefinidas',
+                    ),
                   ),
                 ),
               const SizedBox(height: 16),
@@ -328,14 +327,17 @@ class _ClimaCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     descripcion.isNotEmpty
-                        ? (descripcion[0].toUpperCase() + descripcion.substring(1))
+                        ? (descripcion[0].toUpperCase() +
+                              descripcion.substring(1))
                         : '',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 16),
                   if (temp != null)
-                    Text('${temp!.toStringAsFixed(1)}°C',
-                        style: Theme.of(context).textTheme.displaySmall),
+                    Text(
+                      '${temp!.toStringAsFixed(1)}°C',
+                      style: Theme.of(context).textTheme.displaySmall,
+                    ),
                   const SizedBox(height: 8),
                   Wrap(
                     alignment: WrapAlignment.center,
@@ -344,24 +346,28 @@ class _ClimaCard extends StatelessWidget {
                     children: [
                       if (humedad != null)
                         _InfoChip(
-                            icon: Icons.water_drop,
-                            label: 'Humedad',
-                            value: '$humedad%'),
+                          icon: Icons.water_drop,
+                          label: 'Humedad',
+                          value: '$humedad%',
+                        ),
                       if (sensacion != null)
                         _InfoChip(
-                            icon: Icons.thermostat,
-                            label: 'Sensación',
-                            value: '${sensacion!.toStringAsFixed(1)}°C'),
+                          icon: Icons.thermostat,
+                          label: 'Sensación',
+                          value: '${sensacion!.toStringAsFixed(1)}°C',
+                        ),
                       if (tempMin != null)
                         _InfoChip(
-                            icon: Icons.arrow_downward,
-                            label: 'Mín',
-                            value: '${tempMin!.toStringAsFixed(1)}°C'),
+                          icon: Icons.arrow_downward,
+                          label: 'Mín',
+                          value: '${tempMin!.toStringAsFixed(1)}°C',
+                        ),
                       if (tempMax != null)
                         _InfoChip(
-                            icon: Icons.arrow_upward,
-                            label: 'Máx',
-                            value: '${tempMax!.toStringAsFixed(1)}°C'),
+                          icon: Icons.arrow_upward,
+                          label: 'Máx',
+                          value: '${tempMax!.toStringAsFixed(1)}°C',
+                        ),
                     ],
                   ),
                 ],
@@ -379,12 +385,13 @@ class _InfoChip extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  const _InfoChip({required this.icon, required this.label, required this.value});
+  const _InfoChip({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
   @override
   Widget build(BuildContext context) {
-    return Chip(
-      avatar: Icon(icon),
-      label: Text('$label: $value'),
-    );
+    return Chip(avatar: Icon(icon), label: Text('$label: $value'));
   }
 }
